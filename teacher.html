@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>네이처링 교사용 - 생태 탐사 대시보드</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+  <div class="max-w-6xl mx-auto">
+    <!-- 헤더 -->
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-800">🏫 1학년 2반 생태 탐사 대시보드</h1>
+        <p class="text-sm text-gray-500">학생들이 제출한 식물 데이터가 실시간으로 수집됩니다.</p>
+      </div>
+      <button class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-700">
+        📥 엑셀(CSV) 데이터 다운로드
+      </button>
+    </div>
+
+    <!-- 요약 통계 카운터 -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+        <p class="text-sm text-gray-500">총 탐사 제출 건수</p>
+        <p class="text-3xl font-bold text-emerald-600 mt-1">28 건</p>
+      </div>
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+        <p class="text-sm text-gray-500">발견된 외래종/교란종</p>
+        <p class="text-3xl font-bold text-red-500 mt-1">9 건 (32%)</p>
+      </div>
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+        <p class="text-sm text-gray-500">참여 학생 수</p>
+        <p class="text-3xl font-bold text-blue-600 mt-1">22 / 25 명</p>
+      </div>
+    </div>
+
+    <!-- 메인 콘텐츠 영역: 학생 피드 & 분석 -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- 실시간 학생 관찰 피드 -->
+      <div class="lg:col-span-2 bg-white rounded-xl shadow-sm p-5 border border-gray-200">
+        <h2 class="text-lg font-bold text-gray-800 mb-4">📸 학생 실시간 탐사 피드</h2>
+        <div class="space-y-4">
+          <!-- 피드 아이템 1 -->
+          <div class="flex items-center p-3 border rounded-lg hover:bg-gray-50">
+            <div class="w-16 h-16 bg-gray-200 rounded-md mr-4 flex-shrink-0 flex items-center justify-center">🌿</div>
+            <div class="flex-grow">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-gray-800">김철수</span>
+                <span class="text-xs text-gray-400">5분 전</span>
+              </div>
+              <p class="text-sm text-emerald-700 font-semibold">서양등골나물 <span class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded ml-1">외래종</span></p>
+              <p class="text-xs text-gray-500">학교 운동장 뒤편 화단 근처</p>
+            </div>
+            <button class="text-xs border border-gray-300 px-2 py-1 rounded hover:bg-white">자세히</button>
+          </div>
+
+          <!-- 피드 아이템 2 -->
+          <div class="flex items-center p-3 border rounded-lg hover:bg-gray-50">
+            <div class="w-16 h-16 bg-gray-200 rounded-md mr-4 flex-shrink-0 flex items-center justify-center">🌸</div>
+            <div class="flex-grow">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-gray-800">이영희</span>
+                <span class="text-xs text-gray-400">12분 전</span>
+              </div>
+              <p class="text-sm text-emerald-700 font-semibold">민들레 <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded ml-1">자생종</span></p>
+              <p class="text-xs text-gray-500">정문 앞 잔디밭</p>
+            </div>
+            <button class="text-xs border border-gray-300 px-2 py-1 rounded hover:bg-white">자세히</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 탐사 가이드 & 수업 활용 도구 -->
+      <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-200">
+        <h2 class="text-lg font-bold text-gray-800 mb-4">💡 수업 토론 가이드</h2>
+        <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-800 mb-4">
+          <strong>오늘의 발문 토픽:</strong><br>
+          "외래종 서양등골나물이 학교 주변에서 많이 발견되었습니다. 기존 토종 식물에게 어떤 영향을 미치고 있을까요?"
+        </div>
+        <button class="w-full bg-indigo-50 text-indigo-600 font-bold py-2 rounded-lg text-sm hover:bg-indigo-100 mb-2">
+          🗺️ 학급 종합 탐사 지도 크게보기
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
