@@ -3,86 +3,188 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>네이처링 교사용 - 생태 탐사 대시보드</title>
+  <title>생태 탐사 관리자 (교사용)</title>
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <script>
+    // 🔒 1. 교사용 접속 비밀번호 설정 (원하는 비밀번호로 변경하세요)
+    const TEACHER_PIN = "1234"; 
+    
+    const inputPin = prompt("🔑 교사용 인증: 비밀번호를 입력하세요");
+    if (inputPin !== TEACHER_PIN) {
+      alert("비밀번호가 올바르지 않습니다.");
+      window.location.href = "index.html"; // 틀리면 학생용 페이지로 이동
+    }
+  </script>
 </head>
-<body class="bg-gray-100 min-h-screen p-6">
-  <div class="max-w-6xl mx-auto">
-    <!-- 헤더 -->
-    <div class="flex justify-between items-center mb-6">
-      <div>
-        <h1 class="text-2xl font-bold text-gray-800">🏫 1학년 2반 생태 탐사 대시보드</h1>
-        <p class="text-sm text-gray-500">학생들이 제출한 식물 데이터가 실시간으로 수집됩니다.</p>
-      </div>
-      <button class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-emerald-700">
-        📥 엑셀(CSV) 데이터 다운로드
-      </button>
-    </div>
+<body class="bg-slate-100 min-h-screen">
+  <!-- 상단바 -->
+  <header class="bg-slate-800 text-white p-4 shadow-md flex justify-between items-center">
+    <h1 class="text-lg font-bold flex items-center gap-2">
+      📊 생태 탐사 대시보드 (교사용)
+    </h1>
+    <span class="text-xs bg-emerald-500 text-white px-2.5 py-1 rounded-full animate-pulse">● 실시간 연결됨</span>
+  </header>
 
-    <!-- 요약 통계 카운터 -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-      <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-        <p class="text-sm text-gray-500">총 탐사 제출 건수</p>
-        <p class="text-3xl font-bold text-emerald-600 mt-1">28 건</p>
+  <main class="max-w-6xl mx-auto p-4 md:p-6 space-y-6">
+    <!-- 통계 요약 카드 -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+        <p class="text-xs text-slate-500 font-medium">전체 제출 건수</p>
+        <p id="totalCount" class="text-2xl font-extrabold text-slate-800 mt-1">0건</p>
       </div>
-      <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-        <p class="text-sm text-gray-500">발견된 외래종/교란종</p>
-        <p class="text-3xl font-bold text-red-500 mt-1">9 건 (32%)</p>
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+        <p class="text-xs text-slate-500 font-medium">외래종/교란종 발견</p>
+        <p id="alienCount" class="text-2xl font-extrabold text-rose-600 mt-1">0건</p>
       </div>
-      <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-        <p class="text-sm text-gray-500">참여 학생 수</p>
-        <p class="text-3xl font-bold text-blue-600 mt-1">22 / 25 명</p>
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+        <p class="text-xs text-slate-500 font-medium">참여 학생 수</p>
+        <p id="studentCount" class="text-2xl font-extrabold text-blue-600 mt-1">0명</p>
       </div>
     </div>
 
-    <!-- 메인 콘텐츠 영역: 학생 피드 & 분석 -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- 실시간 학생 관찰 피드 -->
-      <div class="lg:col-span-2 bg-white rounded-xl shadow-sm p-5 border border-gray-200">
-        <h2 class="text-lg font-bold text-gray-800 mb-4">📸 학생 실시간 탐사 피드</h2>
-        <div class="space-y-4">
-          <!-- 피드 아이템 1 -->
-          <div class="flex items-center p-3 border rounded-lg hover:bg-gray-50">
-            <div class="w-16 h-16 bg-gray-200 rounded-md mr-4 flex-shrink-0 flex items-center justify-center">🌿</div>
-            <div class="flex-grow">
-              <div class="flex items-center gap-2">
-                <span class="font-bold text-gray-800">김철수</span>
-                <span class="text-xs text-gray-400">5분 전</span>
-              </div>
-              <p class="text-sm text-emerald-700 font-semibold">서양등골나물 <span class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded ml-1">외래종</span></p>
-              <p class="text-xs text-gray-500">학교 운동장 뒤편 화단 근처</p>
-            </div>
-            <button class="text-xs border border-gray-300 px-2 py-1 rounded hover:bg-white">자세히</button>
-          </div>
-
-          <!-- 피드 아이템 2 -->
-          <div class="flex items-center p-3 border rounded-lg hover:bg-gray-50">
-            <div class="w-16 h-16 bg-gray-200 rounded-md mr-4 flex-shrink-0 flex items-center justify-center">🌸</div>
-            <div class="flex-grow">
-              <div class="flex items-center gap-2">
-                <span class="font-bold text-gray-800">이영희</span>
-                <span class="text-xs text-gray-400">12분 전</span>
-              </div>
-              <p class="text-sm text-emerald-700 font-semibold">민들레 <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded ml-1">자생종</span></p>
-              <p class="text-xs text-gray-500">정문 앞 잔디밭</p>
-            </div>
-            <button class="text-xs border border-gray-300 px-2 py-1 rounded hover:bg-white">자세히</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 탐사 가이드 & 수업 활용 도구 -->
-      <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-200">
-        <h2 class="text-lg font-bold text-gray-800 mb-4">💡 수업 토론 가이드</h2>
-        <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 text-sm text-amber-800 mb-4">
-          <strong>오늘의 발문 토픽:</strong><br>
-          "외래종 서양등골나물이 학교 주변에서 많이 발견되었습니다. 기존 토종 식물에게 어떤 영향을 미치고 있을까요?"
-        </div>
-        <button class="w-full bg-indigo-50 text-indigo-600 font-bold py-2 rounded-lg text-sm hover:bg-indigo-100 mb-2">
-          🗺️ 학급 종합 탐사 지도 크게보기
-        </button>
+    <!-- 필터 버튼 -->
+    <div class="flex justify-between items-center">
+      <h2 class="text-base md:text-lg font-bold text-slate-700">학생 탐사 일지 리스트</h2>
+      <div class="flex gap-2">
+        <button onclick="filterRecords('all')" class="text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1.5 rounded-lg font-medium">전체 보기</button>
+        <button onclick="filterRecords('alien')" class="text-xs bg-rose-100 hover:bg-rose-200 text-rose-700 px-3 py-1.5 rounded-lg font-medium">⚠️ 외래종만 보기</button>
       </div>
     </div>
-  </div>
+
+    <!-- 탐사 내역 테이블 -->
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+      <table class="w-full text-left text-sm text-slate-600 min-w-[600px]">
+        <thead class="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 uppercase">
+          <tr>
+            <th class="p-3">제출 시간</th>
+            <th class="p-3">학생 정보</th>
+            <th class="p-3">식물명 (국명)</th>
+            <th class="p-3">학명</th>
+            <th class="p-3">분류</th>
+            <th class="p-3">정확도</th>
+          </tr>
+        </thead>
+        <tbody id="recordTableBody" class="divide-y divide-slate-100">
+          <tr>
+            <td colspan="6" class="p-8 text-center text-slate-400">데이터를 불러오는 중입니다...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    // ⚙️ 2. Supabase 정보 입력 (본인의 Supabase 정보로 교체하세요)
+    const SUPABASE_URL = 'https://your-project-id.supabase.co';
+    const SUPABASE_ANON_KEY = 'your-anon-key-here';
+    
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let records = [];
+    let currentFilter = 'all';
+
+    // 페이지 로드시 데이터 로드 및 실시간 연동 실행
+    window.addEventListener('DOMContentLoaded', () => {
+      fetchRecords();
+      subscribeToRealtime();
+    });
+
+    // Supabase DB에서 데이터 불러오기
+    async function fetchRecords() {
+      const { data, error } = await supabase
+        .from('plant_logs')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('데이터 가져오기 실패:', error.message);
+        document.getElementById('recordTableBody').innerHTML = 
+          `<tr><td colspan="6" class="p-8 text-center text-rose-500">데이터를 불러오지 못했습니다. URL과 Key를 확인해 주세요.</td></tr>`;
+        return;
+      }
+
+      records = data || [];
+      renderTable();
+    }
+
+    // 학생이 새 글을 올리면 화면 자동 갱신 (Realtime)
+    function subscribeToRealtime() {
+      supabase
+        .channel('public:plant_logs')
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'plant_logs' },
+          (payload) => {
+            records.unshift(payload.new); // 새 데이터를 최상단에 추가
+            renderTable();
+          }
+        )
+        .subscribe();
+    }
+
+    // 테이블 UI 그리기
+    function renderTable() {
+      const tbody = document.getElementById('recordTableBody');
+      tbody.innerHTML = '';
+
+      if (records.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400">아직 제출된 식물 탐사 일지가 없습니다. 🍃</td></tr>`;
+        updateStats();
+        return;
+      }
+
+      const filteredData = records.filter(item => {
+        if (currentFilter === 'alien') return item.is_alien;
+        return true;
+      });
+
+      if (filteredData.length === 0 && currentFilter === 'alien') {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-400">발견된 외래종/교란종이 없습니다. 🎉</td></tr>`;
+        updateStats();
+        return;
+      }
+
+      filteredData.forEach(item => {
+        const timeStr = new Date(item.created_at).toLocaleTimeString('ko-KR', {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50 transition-colors";
+        tr.innerHTML = `
+          <td class="p-3 text-xs text-slate-400">${timeStr}</td>
+          <td class="p-3 font-semibold text-slate-700">${item.student_info}</td>
+          <td class="p-3 font-bold text-slate-800">${item.common_name}</td>
+          <td class="p-3 text-xs text-slate-500 italic">${item.scientific_name}</td>
+          <td class="p-3">
+            ${item.is_alien 
+              ? '<span class="text-xs bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full font-bold">외래/교란종</span>' 
+              : '<span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold">일반/자생종</span>'}
+          </td>
+          <td class="p-3 text-xs font-mono">${item.accuracy || '-'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      updateStats();
+    }
+
+    // 상단 카드 수치 업데이트
+    function updateStats() {
+      document.getElementById('totalCount').innerText = `${records.length}건`;
+      document.getElementById('alienCount').innerText = `${records.filter(r => r.is_alien).length}건`;
+      document.getElementById('studentCount').innerText = `${new Set(records.map(r => r.student_info)).size}명`;
+    }
+
+    function filterRecords(type) {
+      currentFilter = type;
+      renderTable();
+    }
+  </script>
 </body>
 </html>
