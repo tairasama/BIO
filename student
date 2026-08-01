@@ -69,6 +69,12 @@
     function submitObservation() {
       alert('관찰 기록이 교사용 화면으로 전송되었습니다!');
       location.reload();
+
+<footer style="margin-top: 50px; text-align: center;">
+  <a href="teacher.html" style="color: #999; text-decoration: none; font-size: 12px;">
+    🔒 교사용 대시보드 바로가기
+  </a>
+</footer>
     }
   </script>
 </body>
