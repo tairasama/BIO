@@ -116,49 +116,52 @@ renderTable();
 
 function renderTable(){
 
-const tbody =
-document.getElementById(
-"tableBody"
-);
+  const tbody =
+  document.getElementById("tableBody");
 
-tbody.innerHTML="";
+  tbody.innerHTML = "";
 
-if(records.length===0){
+  if(records.length === 0){
 
-tbody.innerHTML=`
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="4"
+        class="p-6 text-center">
+          데이터 없음
+        </td>
+      </tr>
+    `;
 
-<tr>
+    return;
+  }
 
-<td colspan="4"
-class="p-6 text-center">
+  records.reverse().forEach(r => {
 
-데이터 없음
+    tbody.innerHTML += `
 
-</td>
+      <tr>
 
-</tr>
+        <td class="border p-2">
+          ${new Date(r.time).toLocaleString('ko-KR')}
+        </td>
 
-`;
+        <td class="border p-2">
+          ${r.plant}
+        </td>
 
-return;
+        <td class="border p-2">
+          ${r.scientific}
+        </td>
+
+        <td class="border p-2">
+          ${r.alien}
+        </td>
+
+      </tr>
+
+    `;
+
+  });
 
 }
-
-records.reverse().forEach(r=>{
-
-tbody.innerHTML += `
-
-<tr>
-
-<td class="border p-2">
-${new Date(r.time)
-.toLocaleString()}
-</td>
-
-<td class="border p-2">
-${r.plant}
-</td>
-
-<td class="border p-2">
-${r.scientific}
-</td
+``
