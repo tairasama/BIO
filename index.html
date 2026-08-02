@@ -41,9 +41,9 @@
     </button>
   </div>
 
- <script>
 const GAS_URL =
-"https://script.google.com/macros/s/AKfycbx8H41i-jFnHilzlFjJtqlLuXhRJEFZBkTonZvXYPnsJOP9hnGfr05ZOr7I4VAP5tTjXQ/exec";
+"https://script.google.com/macros/s/AKfycbwhcdLzxuLxm8DEko9VjR-Vnd7iIpKNIYmAYiybvntj5YZj6PqkltGBAkMZBxtXLf8xNg/exec";
+
 function previewAndIdentify(event){
 
   const file = event.target.files[0];
@@ -52,7 +52,7 @@ function previewAndIdentify(event){
 
   const reader = new FileReader();
 
-  reader.onload = async function(e){
+  reader.onload = function(e){
 
     document.getElementById("imagePreview").src =
       e.target.result;
@@ -63,7 +63,11 @@ function previewAndIdentify(event){
     document.getElementById("uploadPrompt")
       .classList.add("hidden");
 
-    await identifyPlant(file);
+    document.getElementById("resultCard")
+      .classList.remove("hidden");
+
+    document.getElementById("submitBtn")
+      .classList.remove("hidden");
 
   };
 
@@ -71,120 +75,53 @@ function previewAndIdentify(event){
 
 }
 
-const PLANTNET_API_KEY =
-"2b10Dbl8D6g1uEbuVSWc8QZILu";
+function checkAlienSpecies(scientificName){
 
-async function identifyPlant(file){
+  const badge =
+    document.getElementById("alienBadge");
 
-  const reader =
-    new FileReader();
+  badge.innerText = "✅ 일반종";
 
-  reader.onload =
-  async function(event){
+}
 
-    const imageBase64 =
-      event.target.result;
+async function submitObservation(){
 
-    try{
+  const data = {
 
-      const response =
-        await fetch(
-          GAS_URL,
-          {
-            method:"POST",
-            body:JSON.stringify({
+    plant:
+      document.getElementById("plantName")
+      .innerText,
 
-              action:"identify",
+    scientific:
+      document.getElementById("scientificName")
+      .innerText,
 
-              image:imageBase64
+    alien:
+      document.getElementById("alienBadge")
+      .innerText
 
-            })
-          }
-        );
+  };
 
-      const data =
-        await response.json();
+  try{
 
-      console.log(data);
-
-      if(
-        !data.results ||
-        data.results.length===0
-      ){
-
-        alert(
-          "식물을 찾을 수 없습니다."
-        );
-
-        return;
-
+    await fetch(
+      GAS_URL,
+      {
+        method:"POST",
+        body:JSON.stringify(data)
       }
+    );
 
-      const result =
-        data.results[0];
+    alert("제출 완료");
 
-      const commonName =
-        result.species
-        .commonNames?.[0]
-        || "이름 없음";
+  }
 
-      const scientificName =
-        result.species
-        .scientificNameWithoutAuthor
-        || "확인 불가";
+  catch(error){
 
-      document
-      .getElementById(
-        "plantName"
-      )
-      .innerText =
-      commonName;
+    alert("전송 실패");
 
-      document
-      .getElementById(
-        "scientificName"
-      )
-      .innerText =
-      scientificName;
-
-      document
-      .getElementById(
-        "resultCard"
-      )
-      .classList
-      .remove("hidden");
-
-      document
-      .getElementById(
-        "submitBtn"
-      )
-      .classList
-      .remove("hidden");
-
-      checkAlienSpecies(
-        scientificName
-      );
-
-    }
-
-    catch(error){
-
-      console.error(error);
-
-      alert(
-        "식물 판별 실패"
-      );
-
-    }
-
-  };
-
-  reader.readAsDataURL(file);
+  }
 
 }
-
-}
-
-</script>
 </body>
 </html>
