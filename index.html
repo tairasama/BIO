@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>우리동네 식물 탐사</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
@@ -13,172 +16,168 @@
 
 <div class="max-w-md mx-auto bg-white rounded-2xl shadow-md p-6 border border-emerald-100">
 
-  <h1 class="text-2xl font-bold text-emerald-800 mb-1">
-    🌱 우리동네 식물 탐사
-  </h1>
+<h1 class="text-2xl font-bold text-emerald-800 mb-1">
+🌱 우리동네 식물 탐사
+</h1>
 
-  <p class="text-sm text-gray-500 mb-6">
-    식물을 촬영하고 제출해보세요.
-  </p>
+<p class="text-sm text-gray-500 mb-6">
+사진을 찍고 제출하세요.
+</p>
 
-  <!-- 학번 -->
-  <div class="mb-4">
+<div class="mb-4">
 
-    <label class="block mb-2 font-semibold">
-      학번
-    </label>
+<label class="block mb-2 font-semibold">
+학번
+</label>
 
-    <input
-      type="text"
-      id="studentId"
-      placeholder="예: 20301"
-      class="w-full border rounded-lg p-3">
-
-  </div>
-
-  <!-- 위치 표시 -->
-  <div class="mb-4">
-
-    <p
-      id="locationText"
-      class="text-sm text-gray-600">
-
-      위치 확인 중...
-
-    </p>
-
-  </div>
-
-  <!-- 사진 업로드 -->
-
-  <div class="mb-6">
-
-    <label
-      class="block w-full border-2 border-dashed border-emerald-300 rounded-xl p-6 text-center cursor-pointer">
-
-      <input
-        type="file"
-        accept="image/*"
-        capture="environment"
-        class="hidden"
-        onchange="previewAndIdentify(event)">
-
-      <div id="uploadPrompt">
-
-        <span class="text-4xl">
-          📸
-        </span>
-
-        <p class="mt-2 text-sm text-emerald-700 font-semibold">
-          식물 사진 촬영 / 올리기
-        </p>
-
-      </div>
-
-      <img
-        id="imagePreview"
-        class="hidden w-full h-48 object-cover rounded-lg">
-
-    </label>
-
-  </div>
-
-  <!-- 결과 -->
-
-  <div
-    id="resultCard"
-    class="hidden bg-gray-50 rounded-xl p-4 mb-6 border">
-
-    <div class="flex justify-between">
-
-      <div>
-
-        <h2
-          id="plantName"
-          class="text-xl font-bold">
-
-          식물 미확인
-
-        </h2>
-
-        <p
-          id="scientificName"
-          class="text-xs text-gray-400 italic">
-
-          -
-
-        </p>
-
-      </div>
-
-      <span
-        id="alienBadge"
-        class="bg-green-100 text-green-700 text-xs font-bold px-2 py-1 rounded-full">
-
-        ✅ 일반종
-
-      </span>
-
-    </div>
-
-  </div>
-
-  <button
-    id="submitBtn"
-    onclick="submitObservation()"
-    class="hidden w-full bg-emerald-600 text-white font-bold py-3 rounded-xl">
-
-    제출하기 🚀
-
-  </button>
+<input
+type="text"
+id="studentId"
+placeholder="예: 20301"
+class="w-full border rounded-lg p-3">
 
 </div>
+
+<div class="mb-4">
+
+<p
+id="locationText"
+class="text-sm text-gray-600">
+
+위치 확인 중...
+
+</p>
+
+</div>
+
+<div class="mb-6">
+
+<label
+class="block w-full border-2 border-dashed border-emerald-300 rounded-xl p-6 text-center cursor-pointer">
+
+<input
+type="file"
+accept="image/*"
+capture="environment"
+class="hid*en"
+onchange="previewImage(event)"*
+
+<div id="uploadPrompt">
+
+<span c*ass="text-4xl">
+📸
+</span>
+
+<p cla*s="mt-2 text-sm text-emerald-700 f*nt-semibold">
+식물 사진 촬영 / 올리기
+</p>
+*</div>
+
+<img
+id="imagePreview"
+cla*s="hidden w-full h-48 object-cover*rounded-lg">
+
+</label>
+
+</div>
+
+<d*v
+id="resultCard"
+class="hidden bg*gray-50 rounded-xl p-4 mb-6 border*>
+
+<div class="flex justify-betwee*">
+
+<div>
+
+<h2
+id="plantName"
+clas*="text-xl font-bold text-gray-800"*
+
+식물 관찰
+
+</h2>
+
+<p
+id="scientificN*me"
+class="text-xs text-gray-400 i*alic">
+
+Plant Observation
+
+</p>
+
+<*div>
+
+<span
+id="alienBadge"
+class=*bg-green-100 text-green-700 text-x* font-bold px-2 py-1 rounded-full"*
+
+✅ 일반종
+
+</span>
+
+</div>
+
+</div>
+
+*button
+id="submitBtn"
+onclick="sub*itObservation()"
+class="hidden w-f*ll bg-emerald-600 hover:bg-emerald*700 text-white font-bold py-3 roun*ed-xl">
+
+제출하기 🚀
+
+</button>
+
+</div*
 
 <script>
 
 const GAS_URL =
 "https://script.google.com/macros/s/AKfycbwnlW8uoi77viKxY7IQSmY-dgSMSVQQDXqQSTinq-qHKfGz0VbXTJyOEDKqKu6ALgOuBg/exec";
 
-let currentLatitude = "";
-let currentLongitude = "";
+let currentLatit*de = "";
+let currentLongitude = ""*
 
 function getLocation(){
 
-  if(!navigator.geolocation){
+  if(!n*vigator.geolocation){
 
-    document.getElementById(
-      "locationText"
+    documen*.getElementById(
+      "locationTe*t"
     ).innerText =
-      "위치 사용 불가";
+    "위치 확인 불가*;
 
     return;
+
   }
 
-  navigator.geolocation.getCurrentPosition(
+  navigator.g*olocation.getCurrentPosition(
 
-    function(position){
+   *function(position){
 
-      currentLatitude =
-        position.coords.latitude;
+      current*atitude =
+      position.coords.la*itude;
 
       currentLongitude =
-        position.coords.longitude;
+ *    position.coords.longitude;
 
-      document.getElementById(
-        "locationText"
-      ).innerText =
-      `위도 ${currentLatitude.toFixed(5)}, 경도 ${currentLongitude.toFixed(5)}`;
+  *   document.getElementById(
+      * "locationText"
+      ).innerText *
+
+      `위도 ${currentLatitude.toFi*ed(5)}
+       / 경도 ${currentLongit*de.toFixed(5)}`;
 
     },
 
-    function(){
+    func*ion(){
 
-      document.getElementById(
+      document.getElementB*Id(
         "locationText"
-      ).innerText =
-      "위치 권한 필요";
+      )*innerText =
+      "위치 권한 허용 필요";
 
-    }
+*   }
 
   );
 
@@ -186,50 +185,45 @@ function getLocation(){
 
 getLocation();
 
-function previewAndIdentify(event){
+fun*tion previewImage(event){
 
-  const file =
-    event.target.files[0];
+  const*file =
+  event.target.files[0];
 
-  if(!file) return;
+ *if(!file) return;
 
-  const reader =
-    new FileReader();
+  const reader *
+  new FileReader();
 
-  reader.onload =
+  reader.onl*ad =
   function(e){
 
-    document.getElementById(
-      "imagePreview"
+    document.*etElementById(
+      "imagePreview*
     ).src =
     e.target.result;
+*    document.getElementById(
+     *"imagePreview"
+    ).classList.rem*ve(
+      "hidden"
+    );
 
-    document.getElementById(
-      "imagePreview"
-    ).classList.remove("hidden");
+    doc*ment.getElementById(
+      "upload*rompt"
+    ).classList.add(
+      *hidden"
+    );
 
-    document.getElementById(
-      "uploadPrompt"
-    ).classList.add("hidden");
-
-    document.getElementById(
+    document.getEl*mentById(
       "resultCard"
-    ).classList.remove("hidden");
+    )*classList.remove(
+      "hidden"
+ *  );
 
-    document.getElementById(
-      "submitBtn"
-    ).classList.remove("hidden");
-
-    /* 임시 식물명 */
-    document.getElementById(
-      "plantName"
-    ).innerText =
-    "식물 관찰";
-
-    document.getElementById(
-      "scientificName"
-    ).innerText =
-    "Plant Observation";
+    document.getElementById(*      "submitBtn"
+    ).classList.remove(
+      "hidden"
+    );
 
   };
 
@@ -240,11 +234,11 @@ function previewAndIdentify(event){
 async function submitObservation(){
 
   const studentId =
-    document.getElementById(
-      "studentId"
-    ).value.trim();
+  document.getElementById(
+    "studentId"
+  ).value.trim();
 
-  if(studentId === ""){
+  if(studentId===""){
 
     alert("학번을 입력하세요.");
 
@@ -255,34 +249,28 @@ async function submitObservation(){
   const data = {
 
     studentId:
-
-      studentId,
+    studentId,
 
     latitude:
-
-      currentLatitude,
+    currentLatitude,
 
     longitude:
-
-      currentLongitude,
+    currentLongitude,
 
     plant:
-
-      document.getElementById(
-        "plantName"
-      ).innerText,
+    document.getElementById(
+      "plantName"
+    ).innerText,
 
     scientific:
-
-      document.getElementById(
-        "scientificName"
-      ).innerText,
+    document.getElementById(
+      "scientificName"
+    ).innerText,
 
     alien:
-
-      document.getElementById(
-        "alienBadge"
-      ).innerText
+    document.getElementById(
+      "alienBadge"
+    ).innerText
 
   };
 
