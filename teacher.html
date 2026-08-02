@@ -1,368 +1,164 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>생태 탐사 관리자 (교사용)</title>
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Supabase JS SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  
- <script>
 
-const TEACHER_PIN = "1234";
+<meta charset="UTF-8">
 
-const inputPin =
-prompt("교사용 비밀번호");
+<meta name="viewport"
+content="width=device-width, initial-scale=1">
 
-if(inputPin!==TEACHER_PIN){
+<title>교사용 대시보드</title>
 
-  alert("접근 불가");
+<script src="https://cdn.tailwindcss.com"></script>
+
+<script>
+
+const pin = prompt(
+"교사용 비밀번호 입력"
+);
+
+if(pin !== "1234"){
+
+  alert("접근불가");
 
   location.href="index.html";
 
 }
 
 </script>
+
 </head>
-<body class="bg-slate-100 min-h-screen pb-10">
-  <!-- 상단바 -->
-  <header class="bg-slate-800 text-white p-4 shadow-md flex justify-between items-center">
-    <h1 class="text-lg font-bold flex items-center gap-2">
-      📊 생태 탐사 대시보드 (교사용)
-    </h1>
-    <span class="text-xs bg-emerald-500 text-white px-2.5 py-1 rounded-full animate-pulse">● 실시간 연결됨</span>
-  </header>
 
-  <main class="max-w-6xl mx-auto p-4 md:p-6 space-y-6">
-    <!-- 통계 요약 카드 -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-        <p class="text-xs text-slate-500 font-medium">전체 제출 건수</p>
-        <p id="totalCount" class="text-2xl font-extrabold text-slate-800 mt-1">0건</p>
-      </div>
-      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-        <p class="text-xs text-slate-500 font-medium">외래종/교란종 발견</p>
-        <p id="alienCount" class="text-2xl font-extrabold text-rose-600 mt-1">0건</p>
-      </div>
-      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-        <p class="text-xs text-slate-500 font-medium">참여 학생 수</p>
-        <p id="studentCount" class="text-2xl font-extrabold text-blue-600 mt-1">0명</p>
-      </div>
-    </div>
+<body class="bg-slate-100 p-6">
 
-    <!-- 필터 및 엑셀 다운로드 버튼 영역 -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-      <h2 class="text-base md:text-lg font-bold text-slate-700">학생 탐사 일지 리스트</h2>
-      <div class="flex flex-wrap gap-2 w-full sm:w-auto">
-        <button onclick="filterRecords('all')" class="text-xs bg-slate-200 hover:bg-slate-300 px-3 py-2 rounded-lg font-medium">전체 보기</button>
-        <button onclick="filterRecords('alien')" class="text-xs bg-rose-100 hover:bg-rose-200 text-rose-700 px-3 py-2 rounded-lg font-medium">⚠️ 외래종만 보기</button>
-        <button onclick="downloadCSV()"
-class="bg-green-600 text-white px-4 py-2 rounded">
+<div
+class="max-w-6xl mx-auto">
+
+<div
+class="flex justify-between mb-4">
+
+<h1
+class="text-3xl font-bold">
+
+📊 식물 탐사 대시보드
+
+</h1>
+
+<button
+onclick="loadData()"
+class="bg-blue-600 text-white px-4 py-2 rounded">
+
+새로고침
+
+</button>
+
+</div>
+
+<div
+class="bg-white rounded-xl shadow p-4">
+
+<button
+onclick="downloadCSV()"
+class="bg-green-600 text-white px-4 py-2 rounded mb-4">
 
 CSV 다운로드
 
 </button>
-      </div>
-    </div>
 
-    <!-- 탐사 내역 테이블 -->
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
-      <table class="w-full text-left text-sm text-slate-600 min-w-[650px]">
-        <thead class="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 uppercase">
-          <tr>
-            <th class="p-3">제출 시간</th>
-            <th class="p-3">학생 정보</th>
-            <th class="p-3">식물명 (국명)</th>
-            <th class="p-3">학명</th>
-            <th class="p-3">분류</th>
-            <th class="p-3">정확도</th>
-            <th class="p-3 text-center">상세보기</th>
-          </tr>
-        </thead>
-        <tbody id="recordTableBody" class="divide-y divide-slate-100">
-          let records = [];
+<table
+class="w-full border">
+
+<thead>
+
+<tr
+class="bg-slate-100">
+
+<th class="border p-2">시간</th>
+
+<th class="border p-2">식물명</th>
+
+<th class="border p-2">학명</th>
+
+<th class="border p-2">구분</th>
+
+</tr>
+
+</thead>
+
+<tbody id="tableBody">
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+const GAS_URL =
+"https://여기에_웹앱URL_붙여넣기";
+
+let records=[];
+
+async function loadData(){
+
+const res =
+await fetch(GAS_URL);
+
+records =
+await res.json();
+
+renderTable();
+
+}
 
 function renderTable(){
 
-  const tbody =
-    document.getElementById("recordTableBody");
+const tbody =
+document.getElementById(
+"tableBody"
+);
 
-  tbody.innerHTML = "";
+tbody.innerHTML="";
 
-  if(records.length===0){
+if(records.length===0){
 
-    tbody.innerHTML=`
-      <tr>
-        <td colspan="7"
-        class="p-8 text-center">
-        아직 제출된 데이터가 없습니다.
-        </td>
-      </tr>
-    `;
+tbody.innerHTML=`
 
-    return;
-  }
+<tr>
 
-}
-        </tbody>
-      </table>
-    </div>
-  </main>
+<td colspan="4"
+class="p-6 text-center">
 
-  <!-- 🔍 상세 보기 팝업 (모달) -->
-  <div id="detailModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-xl">
-      <div class="flex justify-between items-center border-b pb-3">
-        <h3 class="text-lg font-bold text-slate-800">🌿 탐사 일지 상세 결과</h3>
-        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
-      </div>
-      
-      <div class="space-y-3 text-sm">
-        <div class="flex justify-between py-1 border-b border-slate-100">
-          <span class="text-slate-500 font-medium">학생 정보</span>
-          <span id="modalStudent" class="font-bold text-slate-800"></span>
-        </div>
-        <div class="flex justify-between py-1 border-b border-slate-100">
-          <span class="text-slate-500 font-medium">제출 시각</span>
-          <span id="modalTime" class="text-slate-700"></span>
-        </div>
-        <div class="flex justify-between py-1 border-b border-slate-100">
-          <span class="text-slate-500 font-medium">식물명 (국명)</span>
-          <span id="modalCommonName" class="font-bold text-emerald-700"></span>
-        </div>
-        <div class="flex justify-between py-1 border-b border-slate-100">
-          <span class="text-slate-500 font-medium">학명</span>
-          <span id="modalScientificName" class="italic text-slate-600"></span>
-        </div>
-        <div class="flex justify-between py-1 border-b border-slate-100">
-          <span class="text-slate-500 font-medium">외래종 구분</span>
-          <span id="modalAlienBadge"></span>
-        </div>
-        <div class="flex justify-between py-1">
-          <span class="text-slate-500 font-medium">AI 판별 정확도</span>
-          <span id="modalAccuracy" class="font-mono text-slate-700"></span>
-        </div>
-      </div>
+데이터 없음
 
-      <button onclick="closeModal()" class="w-full bg-slate-800 hover:bg-slate-900 text-white py-2.5 rounded-xl font-bold text-sm mt-2">
-        닫기
-      </button>
-    </div>
-  </div>
+</td>
 
-  <script>
-    // ⚙️ 2. Supabase 정보 입력 (본인의 Supabase URL 및 Key 입력)
-    const SUPABASE_URL = 'https://your-project-id.supabase.co';
-    const SUPABASE_ANON_KEY = 'your-anon-key-here';
-    
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+</tr>
 
-    let records = [];
-    let currentFilter = 'all';
+`;
 
-    window.addEventListener('DOMContentLoaded', () => {
-      fetchRecords();
-      subscribeToRealtime();
-    });
-
-    // Supabase 데이터 조회
-    async function fetchRecords() {
-      const { data, error } = await supabase
-        .from('plant_logs')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('데이터 로드 오류:', error.message);
-        document.getElementById('recordTableBody').innerHTML = 
-          `<tr><td colspan="7" class="p-8 text-center text-rose-500 font-bold">Supabase 연결 실패! URL 및 Key 값을 확인해 주세요.</td></tr>`;
-        return;
-      }
-
-      records = data || [];
-      renderTable();
-    }
-
-    // 실시간 수신 설정 (Realtime)
-    function subscribeToRealtime() {
-      supabase
-        .channel('public:plant_logs')
-        .on(
-          'postgres_changes',
-          { event: 'INSERT', schema: 'public', table: 'plant_logs' },
-          (payload) => {
-            records.unshift(payload.new);
-            renderTable();
-          }
-        )
-        .subscribe();
-    }
-
-    // 테이블 UI 그리기
-    function renderTable() {
-      const tbody = document.getElementById('recordTableBody');
-      tbody.innerHTML = '';
-
-      if (records.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400">아직 제출된 식물 탐사 일지가 없습니다. 🍃</td></tr>`;
-        updateStats();
-        return;
-      }
-
-      const filteredData = records.filter(item => {
-        if (currentFilter === 'alien') return item.is_alien;
-        return true;
-      });
-
-      if (filteredData.length === 0 && currentFilter === 'alien') {
-        tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400">발견된 외래종/교란종이 없습니다. 🎉</td></tr>`;
-        updateStats();
-        return;
-      }
-
-      filteredData.forEach((item, index) => {
-        const timeStr = new Date(item.created_at).toLocaleString('ko-KR', {
-          month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'
-        });
-
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-50 transition-colors";
-        tr.innerHTML = `
-          <td class="p-3 text-xs text-slate-400">${timeStr}</td>
-          <td class="p-3 font-semibold text-slate-700">${item.student_info}</td>
-          <td class="p-3 font-bold text-slate-800">${item.common_name}</td>
-          <td class="p-3 text-xs text-slate-500 italic">${item.scientific_name}</td>
-          <td class="p-3">
-            ${item.is_alien 
-              ? '<span class="text-xs bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full font-bold">외래/교란종</span>' 
-              : '<span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold">일반/자생종</span>'}
-          </td>
-          <td class="p-3 text-xs font-mono">${item.accuracy || '-'}</td>
-          <td class="p-3 text-center">
-            <button onclick="openModal('${item.id}')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded border border-slate-300 font-medium">
-              🔍 상세보기
-            </button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      updateStats();
-    }
-
-    // 통계 수치 업데이트
-    function updateStats() {
-      document.getElementById('totalCount').innerText = `${records.length}건`;
-      document.getElementById('alienCount').innerText = `${records.filter(r => r.is_alien).length}건`;
-      document.getElementById('studentCount').innerText = `${new Set(records.map(r => r.student_info)).size}명`;
-    }
-
-    // 필터링 기능
-    function filterRecords(type) {
-      currentFilter = type;
-      renderTable();
-    }
-
-    // 🔍 상세 보기 모달 창 열기
-    function openModal(id) {
-      const item = records.find(r => r.id === id);
-      if (!item) return;
-
-      document.getElementById('modalStudent').innerText = item.student_info;
-      document.getElementById('modalTime').innerText = new Date(item.created_at).toLocaleString('ko-KR');
-      document.getElementById('modalCommonName').innerText = item.common_name;
-      document.getElementById('modalScientificName').innerText = item.scientific_name;
-      document.getElementById('modalAccuracy').innerText = item.accuracy || '-';
-
-      const badge = document.getElementById('modalAlienBadge');
-      if (item.is_alien) {
-        badge.innerHTML = '<span class="text-xs bg-rose-100 text-rose-700 px-2 py-1 rounded-full font-bold">⚠️ 외래종 / 생태계교란종</span>';
-      } else {
-        badge.innerHTML = '<span class="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full font-bold">🍃 자생종 / 일반종</span>';
-      }
-
-      document.getElementById('detailModal').classList.remove('hidden');
-    }
-
-    // 모달 창 닫기
-    function closeModal() {
-      document.getElementById('detailModal').classList.add('hidden');
-    }
-
-    // 📥 엑셀(CSV) 다운로드 함수
-    function downloadExcel() {
-      if (records.length === 0) {
-        alert("다운로드할 데이터가 없습니다.");
-        return;
-      }
-
-      // CSV 헤더 설정
-      let csvContent = "\uFEFF"; // 한글 깨짐 방지용 BOM 코드
-      csvContent += "제출시각,학생정보,식물명(국명),학명,외래종여부,정확도\n";
-
-      // 데이터 행 추가
-      records.forEach(r => {
-        const timeStr = new Date(r.created_at).toLocaleString('ko-KR');
-        const isAlienStr = r.is_alien ? "외래종/교란종" : "일반종";
-        csvContent += `"${timeStr}","${r.student_info}","${r.common_name}","${r.scientific_name}","${isAlienStr}","${r.accuracy || ''}"\n`;
-      });
-
-      // 파일 다운로드 브라우저 동작
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.setAttribute("href", url);
-      link.setAttribute("download", `식물탐사일지_결과_${new Date().toISOString().slice(0,10)}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  </script>
-  <script>
-
-function downloadCSV(){
-
-  if(records.length===0){
-
-    alert("다운로드할 데이터가 없습니다");
-
-    return;
-  }
-
-  let csv =
-  "학생정보,식물명,학명,외래종,정확도\n";
-
-  records.forEach(r=>{
-
-    csv +=
-    `"${r.student_info}",
-    "${r.common_name}",
-    "${r.scientific_name}",
-    "${r.is_alien}",
-    "${r.accuracy}"\n`;
-
-  });
-
-  const blob =
-  new Blob([csv],
-  {type:"text/csv;charset=utf-8;"});
-
-  const url =
-  URL.createObjectURL(blob);
-
-  const a =
-  document.createElement("a");
-
-  a.href=url;
-
-  a.download="plant_logs.csv";
-
-  a.click();
+return;
 
 }
 
-</script>
-</body>
-</html>
+records.reverse().forEach(r=>{
+
+tbody.innerHTML += `
+
+<tr>
+
+<td class="border p-2">
+${new Date(r.time)
+.toLocaleString()}
+</td>
+
+<td class="border p-2">
+${r.plant}
+</td>
+
+<td class="border p-2">
+${r.scientific}
+</td
