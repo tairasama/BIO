@@ -27,6 +27,124 @@
     class="w-full border rounded-lg p-3">
 
 </div>
+    <script>
+
+const GAS_URL =
+"https://script.google.com/macros/s/AKfycbwhcdLzxuLxm8DEko9VjR-Vnd7iIpKNIYmAYiybvntj5YZj6PqkltGBAkMZBxtXLf8xNg/exec";
+
+let currentLatitude = "";
+let currentLongitude = "";
+
+function getLocation(){
+
+  if(navigator.geolocation){
+
+    navigator.geolocation.getCurrentPosition(
+
+      function(position){
+
+        currentLatitude =
+          position.coords.latitude;
+
+        currentLongitude =
+          position.coords.longitude;
+
+      }
+
+    );
+
+  }
+
+}
+
+getLocation();
+
+function previewAndIdentify(event){
+
+  const file = event.target.files[0];
+
+  if(!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function(e){
+
+    document.getElementById("imagePreview").src =
+      e.target.result;
+
+    document.getElementById("imagePreview")
+      .classList.remove("hidden");
+
+    document.getElementById("uploadPrompt")
+      .classList.add("hidden");
+
+    document.getElementById("resultCard")
+      .classList.remove("hidden");
+
+    document.getElementById("submitBtn")
+      .classList.remove("hidden");
+
+  };
+
+  reader.readAsDataURL(file);
+
+}
+
+async function submitObservation(){
+
+  const data = {
+
+    studentId:
+      document.getElementById(
+        "studentId"
+      ).value,
+
+    latitude:
+      currentLatitude,
+
+    longitude:
+      currentLongitude,
+
+    plant:
+      document.getElementById(
+        "plantName"
+      ).innerText,
+
+    scientific:
+      document.getElementById(
+        "scientificName"
+      ).innerText,
+
+    alien:
+      document.getElementById(
+        "alienBadge"
+      ).innerText
+
+  };
+
+  try{
+
+    await fetch(
+      GAS_URL,
+      {
+        method:"POST",
+        body:JSON.stringify(data)
+      }
+    );
+
+    alert("제출 완료");
+
+  }
+
+  catch(error){
+
+    alert("전송 실패");
+
+  }
+
+}
+
+</script>
     <div class="mb-6">
       <label class="block w-full border-2 border-dashed border-emerald-300 rounded-xl p-6 text-center cursor-pointer hover:bg-emerald-50 transition">
         <input type="file" accept="image/*" capture="environment" id="photoInput" class="hidden" onchange="previewAndIdentify(event)">
