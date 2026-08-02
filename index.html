@@ -41,70 +41,67 @@
     </button>
   </div>
 
-  <script>
-    function previewAndIdentify(event) {
-      const file = event.target.files[0];
-      if (file) {
-       reader.onload = async function(e) {
+ <script>
 
-  const imageData = e.target.result;
+function previewAndIdentify(event){
 
-  document.getElementById('imagePreview').src =
-    imageData;
+  const file = event.target.files[0];
 
-  document.getElementById('imagePreview')
-    .classList.remove('hidden');
+  if(!file) return;
 
-  document.getElementById('uploadPrompt')
-    .classList.add('hidden');
+  const reader = new FileReader();
 
-  await identifyPlant(file);
+  reader.onload = async function(e){
+
+    document.getElementById("imagePreview").src =
+      e.target.result;
+
+    document.getElementById("imagePreview")
+      .classList.remove("hidden");
+
+    document.getElementById("uploadPrompt")
+      .classList.add("hidden");
+
+    await identifyPlant(file);
+
+  };
+
+  reader.readAsDataURL(file);
 
 }
-        reader.readAsDataURL(file);
-      }
-    }
 
 const PLANTNET_API_KEY =
-"2b10Dbl8D6g1uEbuVSWc8QZILu";
+"여기에_본인_API_KEY";
 
 async function identifyPlant(file){
 
-  const formData =
-    new FormData();
+  const formData = new FormData();
 
-  formData.append(
-    "images",
-    file
-  );
+  formData.append("images", file);
 
-  formData.append(
-    "organs",
-    "leaf"
-  );
+  formData.append("organs", "leaf");
 
   try{
 
-    const response =
-      await fetch(
-
-`https://my-api.plantnet.org/v2/identify/all?api-key=${PLANTNET_API_KEY}`,
-
+    const response = await fetch(
+      `https://my-api.plantnet.org/v2/identify/all?api-key=${PLANTNET_API_KEY}`,
       {
-        method:"POST",
-        body:formData
+        method: "POST",
+        body: formData
       }
-
     );
 
-    const data =
-      await response.json();
+    console.log("상태코드:", response.status);
 
-    if(!data.results ||
-       data.results.length===0){
+    const data = await response.json();
 
+    console.log("PlantNet 결과:", data);
+
+    if(
+      !data.results ||
+      data.results.length === 0
+    ){
       alert("식물을 찾을 수 없습니다.");
-
       return;
     }
 
@@ -112,55 +109,40 @@ async function identifyPlant(file){
       data.results[0];
 
     const commonName =
-      result.species
-      .commonNames?.[0]
-      || "이름 없음";
+      result.species.commonNames?.[0]
+      || "식물이름 없음";
 
     const scientificName =
-      result.species
-      .scientificNameWithoutAuthor
-      || "확인 불가";
+      result.species.scientificNameWithoutAuthor
+      || "학명 없음";
 
-    document.getElementById(
-      "plantName"
-    ).innerText =
+    document.getElementById("plantName").innerText =
       commonName;
 
-    document.getElementById(
-      "scientificName"
-    ).innerText =
+    document.getElementById("scientificName").innerText =
       scientificName;
 
-    document.getElementById(
-      "resultCard"
-    ).classList.remove("hidden");
+    document.getElementById("resultCard")
+      .classList.remove("hidden");
 
-    document.getElementById(
-      "submitBtn"
-    ).classList.remove("hidden");
+    document.getElementById("submitBtn")
+      .classList.remove("hidden");
 
-    checkAlienSpecies(
-      commonName,
-      scientificName
-    );
+    checkAlienSpecies(scientificName);
 
   }
 
-  catch(err){
+  catch(error){
 
-    console.error(err);
+    console.error(error);
 
-    alert(
-      "식물 판별 실패"
-    );
+    alert("PlantNet API 연결 실패");
 
   }
 
 }
-function checkAlienSpecies(
-  commonName,
-  scientificName
-){
+
+function checkAlienSpecies(scientificName){
 
   const alienList = [
 
@@ -176,11 +158,7 @@ function checkAlienSpecies(
       "alienBadge"
     );
 
-  if(
-    alienList.includes(
-      scientificName
-    )
-  ){
+  if(alienList.includes(scientificName)){
 
     badge.innerText =
       "⚠️ 생태계교란 외래종";
@@ -188,9 +166,7 @@ function checkAlienSpecies(
     badge.className =
       "bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded-full";
 
-  }
-
-  else{
+  }else{
 
     badge.innerText =
       "✅ 일반종";
@@ -201,56 +177,59 @@ function checkAlienSpecies(
   }
 
 }
-   const GAS_URL =
+
+const GAS_URL =
 "https://script.google.com/macros/s/AKfycbx8H41i-jFnHilzlFjJtqlLuXhRJEFZBkTonZvXYPnsJOP9hnGfr05ZOr7I4VAP5tTjXQ/exec";
 
-
-async function submitObservation() {
+async function submitObservation(){
 
   const data = {
 
     plant:
-      document.getElementById(
-        "plantName"
-      ).innerText,
+      document.getElementById("plantName")
+      .innerText,
 
     scientific:
-      document.getElementById(
-        "scientificName"
-      ).innerText,
+      document.getElementById("scientificName")
+      .innerText,
 
     alien:
-      document.getElementById(
-        "alienBadge"
-      ).innerText
+      document.getElementById("alienBadge")
+      .innerText
 
   };
 
-try {
+  try{
 
-  const response = await fetch(GAS_URL,{
-    method:"POST",
-    body:JSON.stringify(data)
-  });
+    const response =
+      await fetch(
+        GAS_URL,
+        {
+          method:"POST",
+          body:JSON.stringify(data)
+        }
+      );
 
-  const result = await response.text();
+    console.log(
+      await response.text()
+    );
 
-  console.log(result);
+    alert("제출 완료!");
 
-  alert("제출 완료!");
+    location.reload();
 
-  location.reload();
+  }
+
+  catch(error){
+
+    console.error(error);
+
+    alert("전송 실패");
+
+  }
 
 }
-catch(err){
 
-  console.error(err);
-
-  alert("전송 실패");
-
-}
-
-}
-  </script>
+</script>
 </body>
 </html>
