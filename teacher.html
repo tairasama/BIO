@@ -114,54 +114,45 @@ renderTable();
 
 }
 
-function renderTable(){
+function downloadCSV(){
 
-  const tbody =
-  document.getElementById("tableBody");
+  let csv =
+  "시간,식물명,학명,구분\n";
 
-  tbody.innerHTML = "";
+  records.forEach(r=>{
 
-  if(records.length === 0){
-
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="4"
-        class="p-6 text-center">
-          데이터 없음
-        </td>
-      </tr>
-    `;
-
-    return;
-  }
-
-  records.reverse().forEach(r => {
-
-    tbody.innerHTML += `
-
-      <tr>
-
-        <td class="border p-2">
-          ${new Date(r.time).toLocaleString('ko-KR')}
-        </td>
-
-        <td class="border p-2">
-          ${r.plant}
-        </td>
-
-        <td class="border p-2">
-          ${r.scientific}
-        </td>
-
-        <td class="border p-2">
-          ${r.alien}
-        </td>
-
-      </tr>
-
-    `;
+    csv +=
+    `${r.time},${r.plant},${r.scientific},${r.alien}\n`;
 
   });
 
+  const blob =
+  new Blob(
+    ["\uFEFF"+csv],
+    {type:"text/csv;charset=utf-8;"}
+  );
+
+  const a =
+  document.createElement("a");
+
+  a.href =
+  URL.createObjectURL(blob);
+
+  a.download =
+  "plant_logs.csv";
+
+  a.click();
+
 }
-``
+
+
+
+loadData();
+
+setInterval(loadData,10000);
+
+</script>
+
+</body>
+
+</html>
