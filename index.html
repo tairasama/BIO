@@ -91,27 +91,29 @@ async function submitObservation() {
 
   };
 
-  try{
+try {
 
-    await fetch(GAS_URL,{
+  const response = await fetch(GAS_URL,{
+    method:"POST",
+    body:JSON.stringify(data)
+  });
 
-      method:"POST",
+  const result = await response.text();
 
-      body:JSON.stringify(data)
+  console.log(result);
 
-    });
+  alert("제출 완료!");
 
-    alert("제출 완료!");
+  location.reload();
 
-    location.reload();
+}
+catch(err){
 
-  }
+  console.error(err);
 
-  catch(err){
+  alert("전송 실패");
 
-    alert("전송 실패");
-
-  }
+}
 
 }
   </script>
