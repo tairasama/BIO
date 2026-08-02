@@ -45,27 +45,162 @@
     function previewAndIdentify(event) {
       const file = event.target.files[0];
       if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          document.getElementById('imagePreview').src = e.target.result;
-          document.getElementById('imagePreview').classList.remove('hidden');
-          document.getElementById('uploadPrompt').classList.add('hidden');
-          
-          // AI 식물 동정 모의 동작 (실제 구현 시 API 호출)
-          simulateAIIdentification();
-        }
+       reader.onload = async function(e) {
+
+  const imageData = e.target.result;
+
+  document.getElementById('imagePreview').src =
+    imageData;
+
+  document.getElementById('imagePreview')
+    .classList.remove('hidden');
+
+  document.getElementById('uploadPrompt')
+    .classList.add('hidden');
+
+  await identifyPlant(file);
+
+}
         reader.readAsDataURL(file);
       }
     }
 
-    function simulateAIIdentification() {
-      // API 응답 예시
-      setTimeout(() => {
-        document.getElementById('resultCard').classList.remove('hidden');
-        document.getElementById('submitBtn').classList.remove('hidden');
-      }, 800);
+const PLANTNET_API_KEY =
+"여기에_API_KEY";
+
+async function identifyPlant(file){
+
+  const formData =
+    new FormData();
+
+  formData.append(
+    "images",
+    file
+  );
+
+  formData.append(
+    "organs",
+    "leaf"
+  );
+
+  try{
+
+    const response =
+      await fetch(
+
+`https://my-api.plantnet.org/v2/identify/all?api-key=${PLANTNET_API_KEY}`,
+
+      {
+        method:"POST",
+        body:formData
+      }
+
+    );
+
+    const data =
+      await response.json();
+
+    if(!data.results ||
+       data.results.length===0){
+
+      alert("식물을 찾을 수 없습니다.");
+
+      return;
     }
 
+    const result =
+      data.results[0];
+
+    const commonName =
+      result.species
+      .commonNames?.[0]
+      || "이름 없음";
+
+    const scientificName =
+      result.species
+      .scientificNameWithoutAuthor
+      || "확인 불가";
+
+    document.getElementById(
+      "plantName"
+    ).innerText =
+      commonName;
+
+    document.getElementById(
+      "scientificName"
+    ).innerText =
+      scientificName;
+
+    document.getElementById(
+      "resultCard"
+    ).classList.remove("hidden");
+
+    document.getElementById(
+      "submitBtn"
+    ).classList.remove("hidden");
+
+    checkAlienSpecies(
+      commonName,
+      scientificName
+    );
+
+  }
+
+  catch(err){
+
+    console.error(err);
+
+    alert(
+      "식물 판별 실패"
+    );
+
+  }
+
+}
+function checkAlienSpecies(
+  commonName,
+  scientificName
+){
+
+  const alienList = [
+
+    "Ageratina altissima",
+    "Ambrosia artemisiifolia",
+    "Sicyos angulatus",
+    "Lactuca scariola"
+
+  ];
+
+  const badge =
+    document.getElementById(
+      "alienBadge"
+    );
+
+  if(
+    alienList.includes(
+      scientificName
+    )
+  ){
+
+    badge.innerText =
+      "⚠️ 생태계교란 외래종";
+
+    badge.className =
+      "bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded-full";
+
+  }
+
+  else{
+
+    badge.innerText =
+      "✅ 일반종";
+
+    badge.className =
+      "bg-green-100 text-green-600 text-xs font-bold px-2 py-1 rounded-full";
+
+  }
+
+}
    const GAS_URL =
 "https://script.google.com/macros/s/AKfycbx8H41i-jFnHilzlFjJtqlLuXhRJEFZBkTonZvXYPnsJOP9hnGfr05ZOr7I4VAP5tTjXQ/exec";
 
