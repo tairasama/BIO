@@ -9,16 +9,22 @@
   <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
-  <script>
-    // 🔒 1. 교사용 접속 비밀번호 설정 (원하는 비밀번호로 변경 가능)
-    const TEACHER_PIN = "1234"; 
-    
-    const inputPin = prompt("🔑 교사용 인증: 비밀번호를 입력하세요");
-    if (inputPin !== TEACHER_PIN) {
-      alert("비밀번호가 올바르지 않습니다.");
-      window.location.href = "index.html"; // 틀리면 학생용 페이지로 이동
-    }
-  </script>
+ <script>
+
+const TEACHER_PIN = "1234";
+
+const inputPin =
+prompt("교사용 비밀번호");
+
+if(inputPin!==TEACHER_PIN){
+
+  alert("접근 불가");
+
+  location.href="index.html";
+
+}
+
+</script>
 </head>
 <body class="bg-slate-100 min-h-screen pb-10">
   <!-- 상단바 -->
@@ -52,9 +58,12 @@
       <div class="flex flex-wrap gap-2 w-full sm:w-auto">
         <button onclick="filterRecords('all')" class="text-xs bg-slate-200 hover:bg-slate-300 px-3 py-2 rounded-lg font-medium">전체 보기</button>
         <button onclick="filterRecords('alien')" class="text-xs bg-rose-100 hover:bg-rose-200 text-rose-700 px-3 py-2 rounded-lg font-medium">⚠️ 외래종만 보기</button>
-        <button onclick="downloadExcel()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg font-bold flex items-center gap-1 shadow-sm ml-auto sm:ml-0">
-          📥 엑셀(CSV) 다운로드
-        </button>
+        <button onclick="downloadCSV()"
+class="bg-green-600 text-white px-4 py-2 rounded">
+
+CSV 다운로드
+
+</button>
       </div>
     </div>
 
@@ -73,9 +82,30 @@
           </tr>
         </thead>
         <tbody id="recordTableBody" class="divide-y divide-slate-100">
-          <tr>
-            <td colspan="7" class="p-8 text-center text-slate-400">데이터를 불러오는 중입니다...</td>
-          </tr>
+          let records = [];
+
+function renderTable(){
+
+  const tbody =
+    document.getElementById("recordTableBody");
+
+  tbody.innerHTML = "";
+
+  if(records.length===0){
+
+    tbody.innerHTML=`
+      <tr>
+        <td colspan="7"
+        class="p-8 text-center">
+        아직 제출된 데이터가 없습니다.
+        </td>
+      </tr>
+    `;
+
+    return;
+  }
+
+}
         </tbody>
       </table>
     </div>
@@ -290,5 +320,49 @@
       document.body.removeChild(link);
     }
   </script>
+  <script>
+
+function downloadCSV(){
+
+  if(records.length===0){
+
+    alert("다운로드할 데이터가 없습니다");
+
+    return;
+  }
+
+  let csv =
+  "학생정보,식물명,학명,외래종,정확도\n";
+
+  records.forEach(r=>{
+
+    csv +=
+    `"${r.student_info}",
+    "${r.common_name}",
+    "${r.scientific_name}",
+    "${r.is_alien}",
+    "${r.accuracy}"\n`;
+
+  });
+
+  const blob =
+  new Blob([csv],
+  {type:"text/csv;charset=utf-8;"});
+
+  const url =
+  URL.createObjectURL(blob);
+
+  const a =
+  document.createElement("a");
+
+  a.href=url;
+
+  a.download="plant_logs.csv";
+
+  a.click();
+
+}
+
+</script>
 </body>
 </html>
