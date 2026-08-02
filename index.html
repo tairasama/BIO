@@ -66,10 +66,54 @@
       }, 800);
     }
 
-    function submitObservation() {
-      alert('관찰 기록이 교사용 화면으로 전송되었습니다!');
-      location.reload();
-    }
+   const GAS_URL =
+"https://여기에_웹앱URL_붙여넣기";
+
+
+async function submitObservation() {
+
+  const data = {
+
+    plant:
+      document.getElementById(
+        "plantName"
+      ).innerText,
+
+    scientific:
+      document.getElementById(
+        "scientificName"
+      ).innerText,
+
+    alien:
+      document.getElementById(
+        "alienBadge"
+      ).innerText
+
+  };
+
+  try{
+
+    await fetch(GAS_URL,{
+
+      method:"POST",
+
+      body:JSON.stringify(data)
+
+    });
+
+    alert("제출 완료!");
+
+    location.reload();
+
+  }
+
+  catch(err){
+
+    alert("전송 실패");
+
+  }
+
+}
   </script>
 </body>
 </html>
