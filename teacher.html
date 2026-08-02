@@ -1,97 +1,79 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
-
 <meta charset="UTF-8">
-
-<meta name="viewport"
-content="width=device-width, initial-scale=1">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>교사용 대시보드</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 
 <script>
-
-const pin = prompt(
-"교사용 비밀번호 입력"
-);
+const pin = prompt("교사용 비밀번호 입력");
 
 if(pin !== "1234"){
-
-  alert("접근불가");
-
-  location.href="index.html";
-
+  alert("접근 불가");
+  location.href = "index.html";
 }
-
 </script>
 
 </head>
 
 <body class="bg-slate-100 p-6">
 
-<div
-class="max-w-6xl mx-auto">
+<div class="max-w-6xl mx-auto">
 
-<div
-class="flex justify-between mb-4">
+  <div class="flex justify-between items-center mb-4">
+    <h1 class="text-3xl font-bold">
+      📊 식물 탐사 대시보드
+    </h1>
 
-<h1
-class="text-3xl font-bold">
+    <button
+      onclick="loadData()"
+      class="bg-blue-600 text-white px-4 py-2 rounded">
+      새로고침
+    </button>
+  </div>
 
-📊 식물 탐사 대시보드
+  <div class="bg-white rounded-xl shadow p-4">
 
-</h1>
+    <div class="mb-4 flex gap-2">
 
-<button
-onclick="loadData()"
-class="bg-blue-600 text-white px-4 py-2 rounded">
+      <button
+        onclick="downloadCSV()"
+        class="bg-green-600 text-white px-4 py-2 rounded">
+        CSV 다운로드
+      </button>
 
-새로고침
+    </div>
 
-</button>
+    <table class="w-full border border-gray-300">
 
-</div>
+      <thead>
 
-<div
-class="bg-white rounded-xl shadow p-4">
+        <tr class="bg-slate-100">
 
-<button
-onclick="downloadCSV()"
-class="bg-green-600 text-white px-4 py-2 rounded mb-4">
+          <th class="border p-2">시간</th>
+          <th class="border p-2">식물명</th>
+          <th class="border p-2">학명</th>
+          <th class="border p-2">구분</th>
 
-CSV 다운로드
+        </tr>
 
-</button>
+      </thead>
 
-<table
-class="w-full border">
+      <tbody id="tableBody">
 
-<thead>
+        <tr>
+          <td colspan="4" class="p-6 text-center">
+            불러오는 중...
+          </td>
+        </tr>
 
-<tr
-class="bg-slate-100">
+      </tbody>
 
-<th class="border p-2">시간</th>
+    </table>
 
-<th class="border p-2">식물명</th>
-
-<th class="border p-2">학명</th>
-
-<th class="border p-2">구분</th>
-
-</tr>
-
-</thead>
-
-<tbody id="tableBody">
-</tbody>
-
-</table>
-
-</div>
+  </div>
 
 </div>
 
@@ -100,59 +82,128 @@ class="bg-slate-100">
 const GAS_URL =
 "https://script.google.com/macros/s/AKfycbx8H41i-jFnHilzlFjJtqlLuXhRJEFZBkTonZvXYPnsJOP9hnGfr05ZOr7I4VAP5tTjXQ/exec";
 
-let records=[];
+let records = [];
 
 async function loadData(){
 
-const res =
-await fetch(GAS_URL);
+  try{
 
-records =
-await res.json();
+    const res = await fetch(GAS_URL);
 
-renderTable();
+    records = await res.json();
+
+    renderTable();
+
+  }
+  catch(err){
+
+    console.error(err);
+
+    document.getElementById("tableBody").innerHTML = `
+      <tr>
+        <td colspan="4" class="p-6 text-center text-red-500">
+          데이터 불러오기 실패
+        </td>
+      </tr>
+    `;
+
+  }
+
+}
+
+function renderTable(){
+
+  const tbody =
+    document.getElementById("tableBody");
+
+  tbody.innerHTML = "";
+
+  if(records.length === 0){
+
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="4" class="p-6 text-center">
+          데이터 없음
+        </td>
+      </tr>
+    `;
+
+    return;
+  }
+
+  const sortedRecords =
+    [...records].reverse();
+
+  sortedRecords.forEach(r => {
+
+    tbody.innerHTML += `
+      <tr>
+
+        <td class="border p-2">
+          ${new Date(r.time).toLocaleString("ko-KR")}
+        </td>
+
+        <td class="border p-2">
+          ${r.plant}
+        </td>
+
+        <td class="border p-2">
+          ${r.scientific}
+        </td>
+
+        <td class="border p-2">
+          ${r.alien}
+        </td>
+
+      </tr>
+    `;
+
+  });
 
 }
 
 function downloadCSV(){
 
-  let csv =
-  "시간,식물명,학명,구분\n";
+  if(records.length === 0){
+    alert("다운로드할 데이터가 없습니다.");
+    return;
+  }
 
-  records.forEach(r=>{
+  let csv =
+    "시간,식물명,학명,구분\n";
+
+  records.forEach(r => {
 
     csv +=
-    `${r.time},${r.plant},${r.scientific},${r.alien}\n`;
+      `"${r.time}","${r.plant}","${r.scientific}","${r.alien}"\n`;
 
   });
 
   const blob =
-  new Blob(
-    ["\uFEFF"+csv],
-    {type:"text/csv;charset=utf-8;"}
-  );
+    new Blob(
+      ["\uFEFF" + csv],
+      {
+        type: "text/csv;charset=utf-8;"
+      }
+    );
+
+  const url =
+    URL.createObjectURL(blob);
 
   const a =
-  document.createElement("a");
+    document.createElement("a");
 
-  a.href =
-  URL.createObjectURL(blob);
-
-  a.download =
-  "plant_logs.csv";
-
+  a.href = url;
+  a.download = "plant_logs.csv";
   a.click();
 
 }
 
-
-
 loadData();
 
-setInterval(loadData,10000);
+setInterval(loadData, 10000);
 
 </script>
 
 </body>
-
 </html>
