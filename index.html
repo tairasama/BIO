@@ -12,6 +12,21 @@
     <p class="text-sm text-gray-500 mb-6">사진을 찍어 식물을 찾고 외래종인지 확인해보세요!</p>
 
     <!-- 사진 업로드 영역 -->
+    <div class="mb-4">
+
+  <label class="block mb-2 font-semibold">
+
+    학번
+
+  </label>
+
+  <input
+    type="text"
+    id="studentId"
+    placeholder="예: 20301"
+    class="w-full border rounded-lg p-3">
+
+</div>
     <div class="mb-6">
       <label class="block w-full border-2 border-dashed border-emerald-300 rounded-xl p-6 text-center cursor-pointer hover:bg-emerald-50 transition">
         <input type="file" accept="image/*" capture="environment" id="photoInput" class="hidden" onchange="previewAndIdentify(event)">
